@@ -69,6 +69,17 @@ def readDirAsJson(dirName):
     return o
 
 def toCsv(to, data):
-    w = csv.DictWriter(to, data[0].keys(), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    headers = set()
+    for d in data:
+        headers = headers.union(d.keys())
+
+    key_headers = ['sprint', 'plmt', 'team_name']
+    orderedHeaders = [h for h in headers.difference(set(key_headers))]
+    for h in key_headers:
+        if h in headers:
+            orderedHeaders = [h] + orderedHeaders
+
+    w = csv.DictWriter(to, orderedHeaders, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     w.writeheader()
     w.writerows(data)
+

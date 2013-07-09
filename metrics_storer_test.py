@@ -156,11 +156,7 @@ class CsvTest(unittest.TestCase):
     def test_creates_csv_with_headers_for_list_with_varying_keys(self):
         f = StringIO.StringIO()
         toCsv(f, [{'a':1, 'b':2, 'c':3},{'a':4, 'd':5, 'e':6}, {'a':7, 'e':8, 'f':9}])
-        self.assertEqual("""a,c,b,d,e,f\r
-1,3,2,,\r
-,4,6,5,\r
-,,7,9,8\r
-""", f.getvalue())
+        self.assertEqual("a,c,b,e,d,f\r\n1,3,2,,,\r\n4,,,6,5,\r\n7,,,8,,9\r\n", f.getvalue())
 
     def test_creates_csv_with_headers_for_list_of_several_items(self):
         f = StringIO.StringIO()
@@ -170,6 +166,12 @@ class CsvTest(unittest.TestCase):
 4,6,5\r
 7,9,8\r
 """, f.getvalue())
+
+    def test_csv_headers_start_with_team_plmt_and_sprint(self):
+        f = StringIO.StringIO()
+        toCsv(f, [{'team_name':'b', 'sprint':'a', 'plmt':'j', 'a':1}])
+        self.assertEqual("team_name,plmt,sprint,a", f.getvalue().split('\r')[0])
+
 
 if __name__ == '__main__':
     unittest.main()
