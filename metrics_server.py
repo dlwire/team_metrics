@@ -2,6 +2,7 @@
 import time
 import BaseHTTPServer
 from cgi import parse_multipart, parse_header, parse_qs
+from metrics_storer import writeToDir, mapValues, readDirAsJson, toCsv
 
 HOST_NAME = 'localhost' #'team-metrics.isg.deere.com' # !!!REMEMBER TO CHANGE THIS!!!
 PORT_NUMBER = 9000 # Maybe set this to 9000.
@@ -23,12 +24,20 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(s):
         """Respond to a GET request."""
-        s.send_response(200)
-        s.send_header("Content-type", "text/html")
-        s.end_headers()
-        with open("index.html") as f:
-            html = f.read()
-            s.wfile.write(html)
+        if s.path == '/csv':
+            s.send_response(200)
+            s.send_header('Content-Disposition', 'attachment; filename="team_metrics.csv"')
+            s.end_headers()
+            data = readDirAsJson("data")
+            toCsv(s.wfile, data)
+        else:
+            s.send_response(200)
+            s.send_header("Content-type", "text/html")
+            s.end_headers()
+            with open("index.html") as f:
+                html = f.read()
+                s.wfile.write(html)
+        
 
     def parse_POST(s):
         postvars = {}
@@ -38,7 +47,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         elif ctype == 'application/x-www-form-urlencoded':
             length = int(s.headers['content-length'])
             content = s.rfile.read(length)
-            postvars = getFirstOf(parse_qs(content, keep_blank_values=1))
+            postvars = parse_qs(content, keep_blank_values=1)
         return postvars
     
     def do_POST(s):
@@ -47,7 +56,8 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         s.send_header("Content-type", "text/html")
         s.end_headers()
         postdata = s.parse_POST()
-        s.wfile.write("<html><head><title>Thanks</title></head><body>Thank you soooo much!!</body></html>")
+        writeToDir('data', mapValues(postdata))
+        s.wfile.write("<html><head><title>Thanks</title></head><body>Thank you</body></html>")
 
 if __name__ == '__main__':
     server_class = BaseHTTPServer.HTTPServer
