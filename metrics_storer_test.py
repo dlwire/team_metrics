@@ -153,6 +153,15 @@ class CsvTest(unittest.TestCase):
 1,3,2\r
 """, f.getvalue())
 
+    def test_creates_csv_with_headers_for_list_with_varying_keys(self):
+        f = StringIO.StringIO()
+        toCsv(f, [{'a':1, 'b':2, 'c':3},{'a':4, 'd':5, 'e':6}, {'a':7, 'e':8, 'f':9}])
+        self.assertEqual("""a,c,b,d,e,f\r
+1,3,2,,\r
+,4,6,5,\r
+,,7,9,8\r
+""", f.getvalue())
+
     def test_creates_csv_with_headers_for_list_of_several_items(self):
         f = StringIO.StringIO()
         toCsv(f, [{'a':1, 'b':2, 'c':3},{'a':4, 'b':5, 'c':6}, {'a':7, 'b':8, 'c':9}])
