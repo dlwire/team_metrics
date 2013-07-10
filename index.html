@@ -2,37 +2,55 @@
 <html>
     <head>
         <title>Sprintly Metrics</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+            $.getJSON('/teams', function(data, textStatus, req) {
+                        $(data).each(function(i, v) {
+                                var team = v["team_name"]
+                                $('[name="team_name"]').append("<option value='"+team+"'>"+team+"</option>")
+                            })
+                    })
+            })
+        </script>
     </head>
     <body>
         <form method="POST" action="update_metrics">
             <label>Team Name</label>
-            <input name="team_name"></input>
-            <br/>
-            <label>PLMT</label>
-            <input name="plmt"></input>
-            <br/>
+            <select name="team_name">
+            </select>
+            <br>
             <label>Sprint</label>
-            <input name="sprint"></input>
-            <br/>
+            <select name="sprint">
+                <option value="17-1" selected="selected">17-1</option>
+            </select>
+            <br>
+            <fieldset><legend>Baton Branch Metrics</legend>
             <label>TDD'ed Commit Percentage</label>
-            <input name="tdded_commit_percentage"></input>
-            <br/>
+            <input name="tdded_commit_percentage">%
+            <br>
             <label>Red Build Count</label>
-            <input name="red_build_count"></input>
-            <br/>
+            <input name="red_build_count_baton">
+            <br>
             <label>Total Build Count</label>
-            <input name="total_build_count"></input>
-            <br/>
-            <label>Average WIP as a Percentage of Commitment</label>
-            <input name="wip_as_a_percentage_of_commitment"></input>
-            <br/>
-            <label>Combined Cycle Time</label>
-            <input name="combined_cycle_time"></input>
-            <br/>
+            <input name="total_build_count_baton">
+            <br>
             <label>Do / Say Ratio</label>
-            <input name="do_say_ratio"></input>
-            <br/>
-            <input type="submit" value="Submit"></input>
+            <input name="do_say_ratio_baton">%
+            <br>
+            </fieldset>
+            <fieldset><legend>Default Branch Metrics</legend>
+            <label>Average WIP as a Percentage of Commitment</label>
+            <input name="wip_as_a_percentage_of_commitment">%
+            <br>
+            <label>Combined Cycle Time (In-Progress to Accepted)</label>
+            <input name="combined_cycle_time"> days
+            <br>
+            <label>Do / Say Ratio</label>
+            <input name="do_say_ratio_default">%
+            <br>
+            </fieldset>
+            <input type="submit" value="Submit">
         </form>
     </body>
 </html>

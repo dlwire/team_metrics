@@ -30,6 +30,13 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             s.end_headers()
             data = readDirAsJson("data")
             toCsv(s.wfile, data)
+        elif s.path == '/teams':
+            s.send_response(200)
+            s.send_header("Content-type", "application/json")
+            s.end_headers()
+            with open("teams.json") as f:
+                text = f.read()
+                s.wfile.write(text)
         else:
             s.send_response(200)
             s.send_header("Content-type", "text/html")
