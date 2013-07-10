@@ -41,25 +41,28 @@ class JoinerTest(unittest.TestCase):
         self.assertEqual([fileData], joiner([fileData], postData))
 
 class ReaderTest(unittest.TestCase):
+    def setUp(self):
+        self.fileName = '_datafile_'
+
     def tearDown(self):
-        if os.path.isfile('this_file_should_exist'):
-            os.remove('this_file_should_exist')
+        if os.path.isfile(self.fileName):
+            os.remove(self.fileName)
 
     def test_no_such_file_reads_as_empty_list(self):
-        testPath = "this_file_should_never_exist"
+        testPath = self.fileName
         self.assertFalse(os.path.exists(testPath))
         self.assertEqual([], read(testPath))
         self.assertFalse(os.path.exists(testPath))
 
     def test_empty_file_reads_as_empty_list(self):
-        testPath = "this_file_should_exist"
+        testPath = self.fileName
         with open(testPath, 'w') as f:
             f.write("")
 
         self.assertEqual([], read(testPath))
 
     def test_file_with_list_should_return_list(self):
-        testPath = "this_file_should_exist"
+        testPath = self.fileName
         with open(testPath, 'w') as f:
             data = dumps([{"a":"a"},{'b':'b'}])
             f.write(data)
@@ -67,7 +70,7 @@ class ReaderTest(unittest.TestCase):
         self.assertEqual([{'a':'a'},{'b':'b'}], read(testPath))
 
     def test_file_with_hash_should_return_list(self):
-        testPath = "this_file_should_exist"
+        testPath = self.fileName
         with open(testPath, 'w') as f:
             data = dumps({"a":"a"})
             f.write(data)
@@ -77,28 +80,30 @@ class ReaderTest(unittest.TestCase):
 class WriteTest(unittest.TestCase):
     def setUp(self):
         self.dirName = '_data_'
+        self.fileName = '_datafile_'
+
     def tearDown(self):
-        if os.path.isfile('this_file_should_exist'):
-            os.remove('this_file_should_exist')
+        if os.path.isfile(self.fileName):
+            os.remove(self.fileName)
         if os.path.isdir(self.dirName):
             shutil.rmtree(self.dirName)
 
     def test_does_not_write_no_data(self):
-        writeToDir('this_file_should_not_exist', [])
-        self.assertFalse(os.path.isfile('this_file_should_not_exist'))
+        write(self.fileName, [])
+        self.assertFalse(os.path.isfile(self.fileName))
 
     def test_writes_data_if_file_does_not_exist(self):
-        write('this_file_should_exist', [{'a':'a'}])
-        self.assertTrue(os.path.isfile('this_file_should_exist'))
-        self.assertEqual([{'a':'a'}], read('this_file_should_exist'))
+        write(self.fileName, [{'a':'a'}])
+        self.assertTrue(os.path.isfile(self.fileName))
+        self.assertEqual([{'a':'a'}], read(self.fileName))
         
     def test_writes_data_if_file_does_exist(self):
-        testPath = 'this_file_should_exist'
+        testPath = self.fileName
         with open(testPath, 'w') as f:
             f.write(dumps([{'b':'b'}]))
 
-        write('this_file_should_exist', [{'a':'a'}])
-        self.assertEqual([{'a':'a'}], read('this_file_should_exist'))
+        write(self.fileName, [{'a':'a'}])
+        self.assertEqual([{'a':'a'}], read(self.fileName))
 
     def test_writes_to_unique_file(self):
         count = 1000
